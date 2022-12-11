@@ -2,6 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { EAN13Reader } from "@zxing/library";
 import { BrowserCodeReader } from "@zxing/browser";
 import { LookupService } from "@service/lookup.service";
+import { Volume } from "@models/volume";
 
 @Component({
   selector: "app-root",
@@ -10,7 +11,7 @@ import { LookupService } from "@service/lookup.service";
 })
 export class AppComponent implements OnInit {
   barcode = "";
-  data: any;
+  data: Volume[] = [];
   selectedDevice?: MediaDeviceInfo;
 
   constructor(private lookup: LookupService) {}
@@ -35,7 +36,7 @@ export class AppComponent implements OnInit {
   }
 
   async scan() {
-    this.barcode = "Scanning..."
+    this.barcode = "Scanning...";
     if (!this.selectedDevice) {
       console.log("No video input device selected.");
       return;
@@ -45,11 +46,22 @@ export class AppComponent implements OnInit {
     codeReader.decodeFromVideoDevice(
       this.selectedDevice.deviceId,
       "video",
-     async (result, error, controls) => {
+      async (result, error, controls) => {
         if (result) {
-          this.barcode = String(result) || "";
-          this.data = await this.lookup.lookupISBN(this.barcode);
-      }
+          const barcode = String(result) || "";
+          this.barcode = barcode;
+          if (
+            this.data.find((x) => x.isbn10 === barcode || x.isbn13 === barcode)
+          ) {
+            return;
+          }
+          const volume = await this.lookup.lookupISBN(barcode);
+          if (volume.isbn10) {
+            this.data.push(volume);
+          } else {
+            this.barcode = `${barcode} - Not found`;
+          }
+        }
       }
     );
   }

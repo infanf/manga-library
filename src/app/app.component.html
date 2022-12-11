@@ -1,5 +1,39 @@
-<video id="video"></video>
+<div class="container">
+  <video id="video" style="max-width: 100%"></video>
+</div>
 
 {{ barcode }}
-
-{{data}}
+<div class="table-responsive">
+  <table class="table table-sm table-striped">
+    <thead>
+      <tr>
+        <th scope="col">Cover</th>
+        <th scope="col">Title</th>
+        <th scope="col">Series</th>
+        <th scope="col">Author</th>
+        <th scope="col">Publisher</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let book of data">
+        <td>
+          <img
+            *ngIf="book.cover"
+            [src]="book.cover"
+            [alt]="book.title"
+            width="100"
+          />
+        <th scope="row">{{ book.title }}</th>
+        <td>
+          <div *ngIf="book.series">
+            {{ book.series.title }} #{{ book.series.volume }}
+          </div>
+        </td>
+        <td>
+          <div *ngFor="let author of book.authors">{{ author }}</div>
+        </td>
+        <td>{{ book.publisher }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

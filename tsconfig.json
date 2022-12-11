@@ -22,7 +22,8 @@
     "lib": ["ES2022", "dom"],
     "paths": {
       "@app/*": ["src/app/*"],
-      "@service/*": ["src/app/service/*"]
+      "@service/*": ["src/app/service/*"],
+      "@models/*": ["src/app/types/*"]
     }
   },
   "angularCompilerOptions": {
