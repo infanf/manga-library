@@ -1,6 +1,4 @@
 import { Component, OnInit } from "@angular/core";
-import { EAN13Reader } from "@zxing/library";
-import { BrowserCodeReader } from "@zxing/browser";
 import { LookupService } from "@service/lookup.service";
 import { Volume } from "@models/volume";
 
@@ -11,58 +9,38 @@ import { Volume } from "@models/volume";
 })
 export class AppComponent implements OnInit {
   barcode = "";
+  alreadyScanned: string[] = [];
   data: Volume[] = [];
   selectedDevice?: MediaDeviceInfo;
 
   constructor(private lookup: LookupService) {}
 
-  async ngOnInit() {
-    console.log("ngOnInit");
-    const videoInputDevices =
-      await BrowserCodeReader.listVideoInputDevices().catch((e) => {
-        console.log(e);
-        return [];
-      });
-    if (videoInputDevices.length === 0) {
-      console.log("No video input devices found.");
+  onScanSuccess(barcode: string) {
+    this.barcode = barcode;
+    if (this.alreadyScanned.includes(barcode)) {
+      this.barcode = `${barcode} - Already scanned`;
       return;
     }
-
-    this.selectedDevice = videoInputDevices[1];
-
-    //read barcode from camera
-
-    this.scan();
+    this.alreadyScanned.push(barcode);
+    this.lookupISBN(barcode);
   }
 
-  async scan() {
-    this.barcode = "Scanning...";
-    if (!this.selectedDevice) {
-      console.log("No video input device selected.");
+  async ngOnInit() {
+  }
+
+  async lookupISBN(barcode: string) {
+    if (!barcode.match(/^(97[89]\d{10}|\d{9}[\dX])$/)) {
+      this.barcode = `${barcode} - Invalid ISBN`;
       return;
     }
-    const reader = new EAN13Reader();
-    const codeReader = new BrowserCodeReader(reader);
-    codeReader.decodeFromVideoDevice(
-      this.selectedDevice.deviceId,
-      "video",
-      async (result, error, controls) => {
-        if (result) {
-          const barcode = String(result) || "";
-          this.barcode = barcode;
-          if (
-            this.data.find((x) => x.isbn10 === barcode || x.isbn13 === barcode)
-          ) {
-            return;
-          }
-          const volume = await this.lookup.lookupISBN(barcode);
-          if (volume.isbn10) {
-            this.data.push(volume);
-          } else {
-            this.barcode = `${barcode} - Not found`;
-          }
-        }
-      }
-    );
+    if (this.data.find((x) => x.isbn10 === barcode || x.isbn13 === barcode)) {
+      return;
+    }
+    const volume = await this.lookup.lookupISBN(barcode);
+    if (volume.isbn10) {
+      this.data.push(volume);
+    } else {
+      this.barcode = `${barcode} - Not found`;
+    }
   }
 }

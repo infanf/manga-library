@@ -1,5 +1,11 @@
-<div class="container">
-  <video id="video" style="max-width: 100%"></video>
+<mangalib-sign-up></mangalib-sign-up>
+
+<!-- <div class="container">
+  <ngx-barcode-scanner
+    (valueChange)="onScanSuccess($event)"
+    codes="ean"
+    [errorThreshold]="0.1"
+  ></ngx-barcode-scanner>
 </div>
 
 {{ barcode }}
@@ -21,8 +27,10 @@
             *ngIf="book.cover"
             [src]="book.cover"
             [alt]="book.title"
-            width="100"
+            height="100"
           />
+        </td>
+
         <th scope="row">{{ book.title }}</th>
         <td>
           <div *ngIf="book.series">
@@ -37,3 +45,4 @@
     </tbody>
   </table>
 </div>
+ -->
