@@ -1,7 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { EAN13Reader } from "@zxing/library";
 import { BrowserCodeReader } from "@zxing/browser";
-import { LookupService } from "@service/lookup.service";
+import { LookupService } from "@services/lookup.service";
 import { Volume } from "@models/volume";
 
 @Component({

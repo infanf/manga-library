@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Series, Volume } from '@app/types/volume';
+import { Series, Volume } from '@models/volume';
 import { GoogleBooksVolumes } from '@models/google';
 import { CacheService } from './cache.service';
 
